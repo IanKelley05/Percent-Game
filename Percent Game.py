@@ -1,6 +1,5 @@
 import pygame
 import random
-import math
 
 # Initialize Pygame
 pygame.init()
@@ -11,9 +10,11 @@ pygame.display.set_caption("Percentage Game with Menu")
 clock = pygame.time.Clock()
 
 # Define colors
+blue = (65, 100, 190)
 pink = (255, 192, 203)
 black = (0, 0, 0)
 white = (255, 255, 255)
+backgroundColor = blue
 
 # Set up fonts
 font = pygame.font.Font(None, 74)
@@ -26,47 +27,55 @@ user_input = ""
 score = 0
 feedback = ""
 
-# Function to generate random question
+# Function to generate random question without math library
 def randNumPercentAndAnswer():
-    num = math.ceil(random.randint(1, 200) / 5) * 5  # Random number rounded to the nearest 5
-    percent = math.ceil(random.randint(10, 90) / 10) * 10  # Random percentage rounded to the nearest 5
+    num = ((random.randint(1, 200) + 4) // 5) * 5  # Round to the nearest 5
+    percent = ((random.randint(10, 90) + 9) // 10) * 10  # Round to the nearest 10
     answer = num * (percent / 100)  # Calculate the percentage of the number
     return num, percent, round(answer, 2)
 
 # Draw the menu screen
 def draw_menu():
-    screen.fill(pink)
+    screen.fill(backgroundColor)
 
     # Render title
     title_text = font.render("Percentage Game", True, black)
-    screen.blit(title_text, (180, 100))
+    title_rect = title_text.get_rect(center=(screen.get_width() // 2, 100))
+    screen.blit(title_text, title_rect)
 
-    # Render menu options
+    # Render "Press SPACE to Start" text
     start_text = small_font.render("Press SPACE to Start", True, black)
-    screen.blit(start_text, (220, 300))
+    start_rect = start_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+    screen.blit(start_text, start_rect)
 
+    # Render "Press Q to Quit" text
     quit_text = small_font.render("Press Q to Quit", True, black)
-    screen.blit(quit_text, (250, 400))
+    quit_rect = quit_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 + 100))
+    screen.blit(quit_text, quit_rect)
 
 # Draw the game screen
 def draw_game(num, percent, user_input, score, feedback):
-    screen.fill(pink)
+    screen.fill(backgroundColor)
 
     # Render the question
     question_text = font.render(f"What is {percent}% of {num}?", True, black)
-    screen.blit(question_text, (50, 50))
+    question_rect = question_text.get_rect(center=(screen.get_width() // 2, 100))
+    screen.blit(question_text, question_rect)
 
     # Render user input
     input_text = font.render(user_input, True, black)
-    screen.blit(input_text, (50, 150))
+    input_rect = input_text.get_rect(center=(screen.get_width() // 2, 200))
+    screen.blit(input_text, input_rect)
 
     # Render feedback
     feedback_text = small_font.render(feedback, True, black)
-    screen.blit(feedback_text, (50, 250))
+    feedback_rect = feedback_text.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2 - 100))
+    screen.blit(feedback_text, feedback_rect)
 
     # Render score
     score_text = small_font.render(f"Score: {score}", True, black)
-    screen.blit(score_text, (50, 350))
+    score_rect = score_text.get_rect(center=(screen.get_width() // 2, screen.get_height() - 100))
+    screen.blit(score_text, score_rect)
 
 # Main game variables
 num, percent, correct_answer = randNumPercentAndAnswer()
@@ -93,10 +102,8 @@ while running:
                                 score += 1
                                 num, percent, correct_answer = randNumPercentAndAnswer()
                             else:
-                                feedback = "Incorrect! Try again."
+                                feedback = f"Incorrect! The answer is {correct_answer:.2f}. Try again."
                         else:
-                            if user_input == "q":
-                                running = False
                             feedback = "Invalid input: No letters allowed!"
                         user_input = ""  # Reset input
                 elif event.key == pygame.K_BACKSPACE:  # Handle backspace
